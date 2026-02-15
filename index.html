@@ -1,94 +1,61 @@
-<!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Trash Sorting Game</title>
     <style>
-        body { font-family: Arial, sans-serif; }
-        canvas { background: #eaeaea; display: block; margin: auto; }
+        .trash-item {
+            transition: transform 0.5s ease; /* Smooth transition for the animation */
+        }
+
+        @keyframes moveLeft {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(-100vw); } /* Move item out of view to the left */
+        }
+
+        @keyframes moveRight {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(100vw); } /* Move item out of view to the right */
+        }
+
+        @keyframes moveDown {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(100vh); } /* Move item out of view downwards */
+        }
+
+        .move-left {
+            animation: moveLeft 0.5s forwards;
+        }
+
+        .move-right {
+            animation: moveRight 0.5s forwards;
+        }
+
+        .move-down {
+            animation: moveDown 0.5s forwards;
+        }
     </style>
 </head>
 <body>
-    <h1>Trash Sorting Game</h1>
-    <canvas id="gameCanvas" width="800" height="600"></canvas>
+    <div class="game-area">
+        <div class="trash-item">Item 1</div>
+        <div class="trash-item">Item 2</div>
+        <div class="trash-item">Item 3</div>
+    </div>
     <script>
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-
-        const CAN_DURATION = 2000;
-        const BOTTLE_DURATION = 2500;
-        const BATTERY_DURATION = 3000;
-
-        let score = 0;
-        let timer = 60;
-        let gameInterval;
-
-        const items = [];
-
-        class Item {
-            constructor(type) {
-                this.type = type;
-                this.x = Math.random() * (canvas.width - 50);
-                this.y = 0;
-                this.speed = Math.random() * 2 + 1;
-            }
-
-            update() {
-                this.y += this.speed;
-                if (this.y > canvas.height) {
-                    items.splice(items.indexOf(this), 1);
-                }
-            }
-
-            draw() {
-                ctx.fillStyle = this.type === 'can' ? 'green' : this.type === 'bottle' ? 'blue' : 'grey';
-                ctx.fillRect(this.x, this.y, 50, 50);
-            }
-        }
-
-        function spawnItem() {
-            const rand = Math.random();
-            let type;
-            if (rand < 0.33) type = 'can';
-            else if (rand < 0.66) type = 'bottle';
-            else type = 'battery';
-            items.push(new Item(type));
-        }
-
-        function updateGame() {
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
+        document.addEventListener('keydown', function(event) {
+            const items = document.querySelectorAll('.trash-item');
             items.forEach(item => {
-                item.update();
-                item.draw();
+                switch(event.key) {
+                    case 'ArrowLeft':
+                        item.classList.add('move-left');
+                        break;
+                    case 'ArrowRight':
+                        item.classList.add('move-right');
+                        break;
+                    case 'ArrowDown':
+                        item.classList.add('move-down');
+                        break;
+                }
             });
-            if (timer <= 0) {
-                clearInterval(gameInterval);
-                alert(`Game Over! Your score: ${score}`);
-                return;
-            }
-            timer--;
-        }
-
-        function moveItem(event) {
-            let selectedItem = items[items.length - 1];
-            if (!selectedItem) return;
-            if (event.key === 'ArrowLeft' && selectedItem.type === 'can') {
-                score += 1;
-                items.splice(items.indexOf(selectedItem), 1);
-            } else if (event.key === 'ArrowRight' && selectedItem.type === 'bottle') {
-                score += 1;
-                items.splice(items.indexOf(selectedItem), 1);
-            } else if (event.key === 'ArrowDown' && selectedItem.type === 'battery') {
-                score += 1;
-                items.splice(items.indexOf(selectedItem), 1);
-            }
-        }
-
-        window.addEventListener('keydown', moveItem);
-        const timerInterval = setInterval(spawnItem, [CAN_DURATION, BOTTLE_DURATION, BATTERY_DURATION][Math.floor(Math.random() * 3)]);
-        gameInterval = setInterval(updateGame, 1000);
-        setTimeout(() => { clearInterval(timerInterval); }, 60000);
+        });
     </script>
 </body>
 </html>
