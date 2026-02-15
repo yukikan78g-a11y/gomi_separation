@@ -4,25 +4,75 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Trash Sorting Game</title>
+    <style>
+        body { display: flex; justify-content: center; align-items: center; height: 100vh; background: #f9f9f9; }
+        #game { width: 600px; height: 400px; background: #fff; position: relative; overflow: hidden; border: 1px solid #ccc; }
+        .item { position: absolute; width: 50px; height: 50px; }
+        .can { background: red; }
+        .bottle { background: blue; }
+        .battery { background: yellow; }
+    </style>
 </head>
 <body>
-    <h1>Trash Sorting Game</h1>
-    <p>Welcome to the trash sorting game! Can you sort the trash correctly?</p>
-    <div>
-        <h2>Items to Sort</h2>
-        <ul>
-            <li>Plastic Bottle</li>
-            <li>Glass Jar</li>
-            <li>Food Waste</li>
-            <li>Paper</li>
-        </ul>
-    </div>
-    <div>
-        <h2>Sorting Options</h2>
-        <button onclick="alert('Sorting Plastic!')">Plastic</button>
-        <button onclick="alert('Sorting Glass!')">Glass</button>
-        <button onclick="alert('Sorting Organic!')">Organic Waste</button>
-        <button onclick="alert('Sorting Paper!')">Paper</button>
-    </div>
+    <div id="game"></div>
+    <script>
+        const game = document.getElementById('game');
+        const items = ['can', 'bottle', 'battery'];
+        let score = 0;
+        let gameOver = false;
+
+        function createItem() {
+            const item = document.createElement('div');
+            const randomIndex = Math.floor(Math.random() * items.length);
+            item.className = 'item ' + items[randomIndex];
+            item.style.left = Math.random() * (game.offsetWidth - 50) + 'px';
+            item.style.top = '0px';
+            game.appendChild(item);
+            moveItem(item);
+        }
+
+        function moveItem(item) {
+            let position = 0;
+            const interval = setInterval(() => {
+                if (position >= game.offsetHeight) {
+                    clearInterval(interval);
+                    game.removeChild(item);
+                    gameOver = true;
+                    alert('Game Over! Your score: ' + score);
+                }
+                if (!gameOver) {
+                    position += 5;
+                    item.style.top = position + 'px';
+                }
+            }, 100);
+        }
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === 'ArrowLeft') {
+                // Sort can
+                score += sortItem('can');
+            } else if (event.key === 'ArrowRight') {
+                // Sort bottle
+                score += sortItem('bottle');
+            } else if (event.key === 'ArrowDown') {
+                // Sort battery
+                score += sortItem('battery');
+            }
+        });
+
+        function sortItem(itemType) {
+            // Implement sorting logic here
+            // Example: Check if the sorted item type matches the falling item
+            // If matches, return score + 1, else return score
+            // This is where you can implement your own logic.
+            return 1; // Placeholder
+        }
+
+        setInterval(() => {
+            if (!gameOver) {
+                createItem();
+            }
+        }, 1000);
+    </script>
 </body>
 </html>
